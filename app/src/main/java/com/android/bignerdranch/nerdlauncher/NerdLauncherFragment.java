@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -48,7 +49,7 @@ public class NerdLauncherFragment extends ListFragment {
         });
 
 
-        ArrayAdapter<ResolveInfo> adapter = new ArrayAdapter<ResolveInfo>(getActivity(),
+/*        ArrayAdapter<ResolveInfo> adapter = new ArrayAdapter<ResolveInfo>(getActivity(),
                 android.R.layout.simple_list_item_1, activities) {
             public View getView(int pos, View convertView, ViewGroup parent) {
                 View v = super.getView(pos, convertView, parent);
@@ -58,7 +59,9 @@ public class NerdLauncherFragment extends ListFragment {
                 return v;
             }
 
-        };
+        };*/
+
+        ActivityAdapter adapter = new ActivityAdapter(activities);
 
         setListAdapter(adapter);
     }
@@ -75,4 +78,31 @@ public class NerdLauncherFragment extends ListFragment {
         i.setClassName(activityInfo.applicationInfo.packageName, activityInfo.name);
         startActivity(i);
     }
+
+    private class ActivityAdapter extends ArrayAdapter<ResolveInfo> {
+        public ActivityAdapter(List<ResolveInfo> activities) {
+            super(getActivity(), 0, activities);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                convertView = getActivity().getLayoutInflater().inflate(R.layout.list_item_activity, null);
+            }
+
+            ResolveInfo ri = getItem(position);
+            PackageManager pm = getActivity().getPackageManager();
+
+            ImageView iconImageView = (ImageView) convertView.findViewById(R.id.activity_list_item_iconImageView);
+            iconImageView.setImageDrawable(ri.loadIcon(pm));
+
+
+            TextView titleTextView = (TextView) convertView.findViewById(R.id.activity_list_item_titleTextView);
+            titleTextView.setText(ri.loadLabel(pm));
+
+            return convertView;
+        }
+    }
+
+
 }
